@@ -23,11 +23,7 @@ export default async function MovieDetailPage({
         
         <div className="flex flex-col md:flex-row gap-8">
          
-          <img 
-            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} 
-            alt={movie.title}
-            className="rounded-lg w-full md:w-1/3 h-auto object-cover"
-          />
+          <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}  alt={movie.title} className="rounded-lg w-full md:w-1/3 h-auto object-cover" />
           
        
           <div className="flex-1 flex flex-col justify-center">

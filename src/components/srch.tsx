@@ -5,13 +5,19 @@ import Card from "./card";
 
 const API_KEY = "9b702a6b89b0278738dab62417267c49";
 
+interface Movie {
+  id: number;
+  title: string;
+  poster_path: string | null;
+  vote_average: number;
+}
+
 export default function Srch() {
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
-
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -73,7 +79,6 @@ export default function Srch() {
         </button>
       </div>
 
-
       <div className="flex flex-wrap justify-center gap-2 w-full max-w-4xl">
         {genres.map((genre) => (
           <button
@@ -93,15 +98,13 @@ export default function Srch() {
         ))}
       </div>
 
-
       {loading && <p className="text-white">Loading...</p>}
       {!loading && query.trim() && movies.length === 0 && (
         <p className="text-white">No results found</p>
       )}
 
-
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 w-full p-10">
-        {movies.map((movie: any) => (
+        {movies.map((movie: Movie) => (
           <Card
             key={movie.id}
             id={String(movie.id)}
@@ -109,9 +112,10 @@ export default function Srch() {
             img_url={
               movie.poster_path
                 ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
-                : "/no-poster.jpg" 
+                : "/no-poster.jpg"
             }
-            vote_average={movie.vote_average}/>
+            vote_average={movie.vote_average}
+          />
         ))}
       </div>
     </div>
