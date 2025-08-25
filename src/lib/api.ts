@@ -1,4 +1,4 @@
-const API_KEY = "9b702a6b89b0278738dab62417267c49";
+const API_KEY = "9b702a6b89b0278738dab62417267c49"
 
 export async function fetchMovieDetails(id: string) {
   const res = await fetch(

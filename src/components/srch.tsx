@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import Card from "./card";
 
@@ -18,6 +17,8 @@ export default function Srch() {
   const [loading, setLoading] = useState(false);
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [genres, setGenres] = useState<{ id: number; name: string }[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -36,16 +37,17 @@ export default function Srch() {
       try {
         let url;
         if (query.trim()) {
-          url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`;
+          url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&page=${page}`;
         } else if (selectedGenre) {
-          url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${selectedGenre}`;
+          url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${selectedGenre}&page=${page}`;
         } else {
-          url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`;
+          url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&page=${page}`;
         }
 
         const res = await fetch(url);
         const data = await res.json();
         setMovies(data.results || []);
+        setTotalPages(data.total_pages || 1);
       } catch (error) {
         console.error("Error fetching movies:", error);
       } finally {
@@ -55,11 +57,13 @@ export default function Srch() {
 
     const timer = setTimeout(fetchMovies, 500);
     return () => clearTimeout(timer);
-  }, [query, selectedGenre]);
+  }, [query, selectedGenre, page]);
+
+  const handlePrev = () => setPage(prev => Math.max(prev - 1, 1));
+  const handleNext = () => setPage(prev => Math.min(prev + 1, totalPages));
 
   return (
     <div className="flex flex-col items-center gap-4 w-full p-4">
-
       <div className="flex gap-2 w-full max-w-2xl">
         <input
           className="w-full h-12 rounded-full border-none px-4 bg-white text-black"
@@ -68,15 +72,10 @@ export default function Srch() {
           onChange={(e) => {
             setQuery(e.target.value);
             setSelectedGenre(null);
+            setPage(1);
           }}
           placeholder="Search movies..."
         />
-        <button
-          className="px-6 py-2 rounded-full text-white bg-gradient-to-r from-[#631056] to-[#fc466b] whitespace-nowrap"
-          type="button"
-        >
-          Search
-        </button>
       </div>
 
       <div className="flex flex-wrap justify-center gap-2 w-full max-w-4xl">
@@ -85,7 +84,8 @@ export default function Srch() {
             key={genre.id}
             onClick={() => {
               setSelectedGenre(genre.id);
-              setQuery(""); 
+              setQuery("");
+              setPage(1);
             }}
             className={`px-4 py-2 rounded-full transition-colors ${
               selectedGenre === genre.id
@@ -117,6 +117,23 @@ export default function Srch() {
             vote_average={movie.vote_average}
           />
         ))}
+      </div>
+
+
+      <div className="flex gap-2 mt-4">
+        <button
+          onClick={handlePrev}
+          disabled={page === 1}
+          className="px-4 py-2 bg-gray-600 text-white rounded disabled:opacity-50">
+          Prev
+        </button>
+        <span className="px-4 py-2 text-white">{page} / {totalPages}</span>
+        <button
+          onClick={handleNext}
+          disabled={page === totalPages}
+          className="px-4 py-2 bg-gray-600 text-white rounded disabled:opacity-50">
+          Next
+        </button>
       </div>
     </div>
   );
