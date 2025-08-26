@@ -1,6 +1,6 @@
 import { fetchMovieDetails } from "@/lib/api";
 import Credits from "@/components/credits";
-import VideoList from "@/components/video"; // ստուգիր՝ կա՞ էս ֆայլը
+import VideoList from "@/components/video"; 
 import ReviewsList from "@/components/coments";
 
 export default async function MovieDetailPage({
